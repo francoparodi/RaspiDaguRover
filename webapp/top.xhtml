@@ -1,0 +1,27 @@
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns="http://www.w3.org/1999/xhtml" xmlns:p="http://primefaces.org/ui"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+	<h:panelGrid columns="2" styleClass="top">
+
+		<h:panelGrid columns="1">
+			<p:graphicImage styleClass="logo" id="logo" library="images"
+				name="raspiLogo.png" />
+		</h:panelGrid>
+
+		<h:panelGrid columns="2" width="100%">
+			<p:inputSwitch style="float: right;">
+				<p:ajax listener="#{daguController.engineSwitch}"
+					update="tabControls reverseSwitch optionsPanel idSubmitLogout" />
+			</p:inputSwitch>
+			
+			<p:commandButton id="idSubmitLogout" disabled="#{daguController.engine}" style="float: right;"  icon="ui-icon-power" type="submit"
+				action="#{loginController.logout()}">
+			</p:commandButton>
+
+		</h:panelGrid>
+
+	</h:panelGrid>
+
+</ui:composition>

@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile">
+
+<f:view renderKitId="PRIMEFACES_MOBILE" />
+
+<h:head>
+	<title>RASPBERRY ON DAGU ROVER</title>
+	<link rel="icon" type="image/png" href="resources/icons/raspi.png" />
+	
+<h:outputScript library="js" name="primefacesMobileFix.js" />
+
+</h:head>
+
+<!-- <h:body style="background-image:url('#{resource['images:dagu5.jpg']}');" > -->
+<h:body>
+
+	<h:outputStylesheet library="css" name="style.css" />
+
+	<h:form id="idForm">
+
+		<p:growl id="growl" showDetail="true" sticky="true" autoUpdate="true" />
+
+		<h:panelGrid columns="1" styleClass="top">
+			<h:panelGrid columns="1">
+				<p:graphicImage styleClass="logo" id="logo" library="images"
+					name="raspiLogo.png" />
+			</h:panelGrid>
+		</h:panelGrid>
+
+		<p:separator />
+
+		<h:panelGrid columns="1" style="width: 50%; text-align:center;">
+			<p:inputText id="user" value="#{loginController.user}"></p:inputText>
+			<p:watermark for="user" value="user" />
+
+			<p:password id="password" value="#{loginController.password}"></p:password>
+			<p:watermark for="password" value="password" />
+
+			<p:commandButton id="idSubmitLogin" icon="ui-icon-lock" 
+				action="#{loginController.login()}" >
+			</p:commandButton>
+			<p:defaultCommand target="idSubmitLogin" />
+		</h:panelGrid>
+
+
+	</h:form>
+</h:body>
+
+</html>

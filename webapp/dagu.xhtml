@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pm="http://primefaces.org/mobile">
+
+<f:view renderKitId="PRIMEFACES_MOBILE" />
+
+<h:head>
+	<title>RASPBERRY ON DAGU ROVER</title>
+	<link rel="icon" type="image/png" href="resources/icons/raspi.png" />
+
+	<h:outputScript library="js" name="primefacesMobileFix.js" />
+	<h:outputScript library="js" name="loginRedirect.js" />
+
+</h:head>
+
+<h:body>
+
+	<h:outputStylesheet library="css" name="style.css" />
+
+	<h:form id="idForm" rendered="#{userLogged.authorized}">
+
+		<p:growl id="growl" showDetail="true" sticky="true" autoUpdate="true" />
+
+		<p:poll autoStart="true" global="false"
+			interval="#{daguController.pollingTime}"
+			listener="#{daguController.onPollingTimeout()}" />
+
+		<ui:include src="top.xhtml" />
+
+		<p:separator />
+
+		<h:panelGrid id="tabControls" columns="1" style="width: 100%">
+
+			<h:panelGrid columns="2" style="width: 100%">
+				<p:commandButton disabled="#{not daguController.engine}"
+					styleClass="controls" icon="ui-icon-plus" type="button">
+					<p:ajax listener="#{daguController.onAllIncrease}"
+						update="cameraLog" />
+				</p:commandButton>
+				<p:commandButton style="float: right;" id="optionsBtn"
+					disabled="#{not daguController.engine}" type="button"
+					icon="ui-icon-gear" />
+			</h:panelGrid>
+
+			<h:panelGrid columns="5">
+				<p:commandButton disabled="#{not daguController.engine}"
+					styleClass="controls" icon="ui-icon-alert" type="button">
+					<p:ajax listener="#{daguController.stopAll}" update="cameraLog" />
+				</p:commandButton>
+				<p:commandButton disabled="#{not daguController.engine}"
+					styleClass="controls" icon="ui-icon-back" type="button">
+					<p:ajax listener="#{daguController.onLeftSteer}" update="cameraLog" />
+				</p:commandButton>
+				<p:commandButton disabled="#{not daguController.engine}"
+					icon="ui-icon-arrow-u" type="button">
+					<p:ajax listener="#{daguController.onStraight}" update="cameraLog" />
+				</p:commandButton>
+				<p:commandButton disabled="#{not daguController.engine}"
+					styleClass="controls" icon="ui-icon-forward" type="button">
+					<p:ajax listener="#{daguController.onRightSteer}"
+						update="cameraLog" />
+				</p:commandButton>
+			</h:panelGrid>
+
+			<h:panelGrid columns="2" style="width: 100%">
+				<p:commandButton disabled="#{not daguController.engine}"
+					styleClass="controls" icon="ui-icon-minus" type="button">
+					<p:ajax listener="#{daguController.onAllDecrease}"
+						update="cameraLog" />
+				</p:commandButton>
+				<p:inputSwitch style="float: right;" id="reverseSwitch"
+					offLabel="Rev." onLabel="Rev."
+					disabled="#{not daguController.engine}">
+					<p:ajax listener="#{daguController.reverseAll}" update="cameraLog" />
+				</p:inputSwitch>
+			</h:panelGrid>
+
+			<h:panelGrid id="cameraLog" style="width: 100%">
+
+				<h:panelGrid rendered="#{daguController.cameraLog}"
+					style="width: 100%">
+					<h:inputTextarea style="width: 100%" disabled="true" rows="4"
+						id="logOutput" value="#{daguController.log}" />
+				</h:panelGrid>
+
+				<h:panelGrid rendered="#{!daguController.cameraLog}"
+					style="width: 90%">
+					<p:commandButton id="idLight" icon="ui-icon-eye" type="submit"
+						action="#{daguController.onOffLight()}">
+			</p:commandButton>
+					<img src="#{daguController.cameraUrl}" />
+				</h:panelGrid>
+
+			</h:panelGrid>
+
+		</h:panelGrid>
+
+		<p:dialog header="Settings" widgetVar="settings" showEffect="pop">
+			<h:panelGrid columns="2">
+				<p:outputLabel value="OS:"></p:outputLabel>
+				<p:outputLabel value="#{daguController.os}"></p:outputLabel>
+				<p:outputLabel value="Arch:"></p:outputLabel>
+				<p:outputLabel value="#{daguController.arch}"></p:outputLabel>
+				<p:outputLabel value="Private IP:"></p:outputLabel>
+				<p:outputLabel value="#{daguController.raspberryPrivateIP}"></p:outputLabel>
+				<p:outputLabel value="Public IP:"></p:outputLabel>
+				<p:outputLabel value="#{daguController.raspberryPublicIP}"></p:outputLabel>
+				<p:outputLabel value="Polling time:"></p:outputLabel>
+				<p:outputLabel value="#{daguController.pollingTime} sec."></p:outputLabel>
+				<p:outputLabel value="Engines timeout:"></p:outputLabel>
+				<p:outputLabel value="#{daguController.enginesTimeout} sec."></p:outputLabel>
+				<p:outputLabel value="Camera URL:"></p:outputLabel>
+				<p:outputLabel value="#{daguController.cameraUrl}"></p:outputLabel>
+				<p:outputLabel value="Engines power limit:"></p:outputLabel>
+				<p:outputLabel value="#{daguController.upperLimitEngines} %"></p:outputLabel>
+				<p:outputLabel value="Incr./Decr. per step:"></p:outputLabel>
+				<p:outputLabel value="#{daguController.percentageSteps} %"></p:outputLabel>
+				<p:outputLabel value="Delta steering:"></p:outputLabel>
+				<p:outputLabel value="#{daguController.percentageDeltaSteering} %"></p:outputLabel>
+			</h:panelGrid>
+		</p:dialog>
+
+		<p:overlayPanel id="optionsPanel" style="width:200px" for="optionsBtn"
+			widgetVar="ovrPanel" at="left" showEffect="overlay"
+			showCloseIcon="true">
+			<p:menu>
+				<p:menuitem value="#{userLogged.name}" icon="ui-icon-user"
+					iconPos="left" type="submit" />
+				<p:menuitem value="Show Cam"
+					actionListener="#{daguController.cameraLog('false')}"
+					update="cameraLog" oncomplete="PF('ovrPanel').hide();"
+					icon="ui-icon-video" />
+				<p:menuitem value="Show Log"
+					actionListener="#{daguController.cameraLog('true')}"
+					update="cameraLog" oncomplete="PF('ovrPanel').hide();"
+					icon="ui-icon-bars" />
+				<p:menuitem value="Clear Log"
+					actionListener="#{daguController.clearLog()}"
+					oncomplete="PF('ovrPanel').hide();" update="logOutput"
+					icon="ui-icon-delete" />
+				<p:menuitem value="Info Settings" onclick="PF('settings').show();"
+					oncomplete="PF('ovrPanel').hide();" icon="ui-icon-info" />
+				<p:menuitem value="Unlock cockpit"
+					rendered="#{userLogged.name eq 'admin'}"
+					actionListener="#{daguController.unlockCockpit()}"
+					oncomplete="PF('ovrPanel').hide();" update="logOutput"
+					icon="ui-icon-recycle" />
+			</p:menu>
+		</p:overlayPanel>
+
+	</h:form>
+
+	<h:form id="redirect" rendered="#{!userLogged.authorized}">
+		<h1>Redirecting to login... <span id="count"></span></h1>
+	</h:form>
+
+</h:body>
+
+</html>
